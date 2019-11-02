@@ -9,7 +9,8 @@ const schema = new mongoose.Schema({
     required: true,
     set(val) {
       return bcrypt.hashSync(val, 10)
-    }
+    },
+    select: false
   },
   avatar: {
     type: String,

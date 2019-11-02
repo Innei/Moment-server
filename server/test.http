@@ -1,7 +1,7 @@
 @url=http://localhost:3000/api
 
 ### get
-get {{url}}/moments?size=1&page=12
+get {{url}}/moments?size=1&page=4
 
 ### get master
 get {{url}}/master
@@ -9,6 +9,14 @@ get {{url}}/master
 ### get intro
 get {{url}}/master/introduce
 
+### login
+post {{url}}/master/login
+Content-Type: application/json
+
+{
+  "username": "Innei",
+  "password": "yiny2336!!!"
+}
 ### post new moment
 post {{url}}/moments
 Content-Type: application/json

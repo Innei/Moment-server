@@ -5,6 +5,7 @@ const assert = require('assert')
 const router = express.Router()
 
 router
+  .use(require('../middlewares/isInit')())
   .get('/', async (req, res) => {
     const { page = 1, size = 10 } = req.query
     assert(page > 0, '页数不能小于0', 422)
@@ -64,4 +65,10 @@ router
     res.send(documents)
   })
 
+  .delete('/:id', async (req, res) => {
+    const { id } = req.body
+    assert(id, 422, '标识符为空')
+    const document = await Moment.deleteOne({ _id: id })
+    res.send(document)
+  })
 module.exports = router
