@@ -17,6 +17,10 @@ Content-Type: application/json
   "username": "Innei",
   "password": "yiny2336!!!"
 }
+
+### sign out
+get {{url}}/master/sign_out
+
 ### post new moment
 post {{url}}/moments
 Content-Type: application/json

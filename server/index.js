@@ -8,7 +8,7 @@ const config = require('./config')
 
 const port = process.env.PORT || 3000
 const app = express()
-let client = redis.createClient()
+const client = redis.createClient()
 
 require('./plugins/db')
 // init

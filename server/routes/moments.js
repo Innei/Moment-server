@@ -8,7 +8,7 @@ router
   .use(require('../middlewares/isInit')())
   .get('/', async (req, res) => {
     const { page = 1, size = 10 } = req.query
-    assert(page > 0, '页数不能小于0', 422)
+    assert(page > 0, '页数不能小于 0', 422)
 
     const data = await Moment.find({})
       .skip((page - 1) * size)
@@ -31,11 +31,21 @@ router
       data
     })
   })
-
+  .use(require('../middlewares/isMaster')())
   .post('/', async (req, res) => {
     let data
-    const { title, body, mood, weather, source, src, comment } = req.body
-    switch (req.body.type) {
+    const { type } = req.body
+    assert(type, 422, '不正确的类型')
+    const {
+      title,
+      body,
+      mood,
+      weather,
+      source,
+      src,
+      comment
+    } = req.body.content
+    switch (type) {
       case 'moment':
         data = {
           title,
@@ -61,7 +71,8 @@ router
       default:
         break
     }
-    const documents = await Moment.create(data)
+
+    const documents = await Moment.create({ type, content: { ...data } })
     res.send(documents)
   })
 
