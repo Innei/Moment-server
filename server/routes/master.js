@@ -29,7 +29,7 @@ router
       assert(password, 422, '密码不能为空')
       const zxc = require('zxcvbn')(password)
       if (zxc.score < 3) {
-        throw new Error('密码设置过于简单')
+        return res.status(400).send({ ok: 0, msg: '密码设置过于简单' })
       }
       const doc = await Master.create({
         username,
@@ -43,6 +43,15 @@ router
       res.send({ ok: 1, ...doc.toObject() })
     }
   )
+  .post('/check_pass', async (req, res) => {
+    const { password } = req.body
+    assert(password, 422, '密码为空')
+    const zxc = require('zxcvbn')(password)
+    if (zxc.score < 3) {
+      return res.status(400).send({ ok: 0, msg: '密码设置过于简单' })
+    }
+    res.send({ ok: 1 })
+  })
   /**
    * 以下路由需要初始化后才能使用
    */
@@ -104,7 +113,7 @@ router
 
     const zxc = require('zxcvbn')(password)
     if (zxc.score < 3) {
-      throw new Error('密码设置过于简单')
+      return res.status(400).send({ ok: 0, msg: '密码设置过于简单' })
     }
 
     const master = await Master.findOne()
