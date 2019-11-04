@@ -8,11 +8,18 @@ router
   /**
    * 初次使用的初始化
    */
+  .get('/init', async (req, res) => {
+    if (req.app.get('isInit')) {
+      return res.send({ ok: 0, msg: '已经完成初始化' })
+    }
+    return res.send({ ok: 1 })
+  })
+
   .post(
-    '/first_init',
+    '/init',
     (req, res, next) => {
       if (req.app.get('isInit')) {
-        return res.status(400).send({ ok: 0, msg: '已经完成初始化' })
+        return res.send({ ok: 0, msg: '已经完成初始化' })
       }
       next()
     },
@@ -29,7 +36,7 @@ router
       assert(password, 422, '密码不能为空')
       const zxc = require('zxcvbn')(password)
       if (zxc.score < 3) {
-        return res.status(400).send({ ok: 0, msg: '密码设置过于简单' })
+        return res.send({ ok: 0, msg: '密码设置过于简单' })
       }
       const doc = await Master.create({
         username,
@@ -48,7 +55,7 @@ router
     assert(password, 422, '密码为空')
     const zxc = require('zxcvbn')(password)
     if (zxc.score < 3) {
-      return res.status(400).send({ ok: 0, msg: '密码设置过于简单' })
+      return res.send({ ok: 0, msg: '密码设置过于简单' })
     }
     res.send({ ok: 1 })
   })
@@ -67,7 +74,7 @@ router
    * 获取主人介绍
    */
   .get('/introduce', async (req, res) => {
-    console.log(req.session)
+    //console.log(req.session)
 
     const { userIntro } = await Master.findOne()
     res.send({ ok: 1, ...userIntro.toObject() })

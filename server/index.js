@@ -35,9 +35,15 @@ require('./routes/index')(app)
 app.listen(port)
 console.log('Express app started on port ' + port)
 
-app.use((err, req, res, next) => {
+app.use(async (err, req, res, next) => {
   if (err) {
-    res
+    // 如果密码不对 等待3秒 防止爆破
+    if (err.status === 400 || err.statusCode === 400) {
+      await (milliseconds => {
+        return new Promise(resolve => setTimeout(resolve, milliseconds))
+      })(3000)
+    }
+    return res
       .status(err.status || err.statusCode || 500)
       .send({ ok: 0, msg: err.message })
   }

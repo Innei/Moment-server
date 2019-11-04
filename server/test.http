@@ -37,7 +37,7 @@ Content-Type: application/json
 }
 
 ### init 
-post {{url}}/master/first_init
+post {{url}}/master/init
 Content-Type: application/json
 
 {
