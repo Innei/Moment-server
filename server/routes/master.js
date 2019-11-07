@@ -107,6 +107,15 @@ router
     })
   })
   /**
+   * 判断是否已经登录
+   */
+  .get('/check_logged', async (req, res) => {
+    if (req.session.master) {
+      return res.send({ ok: 1 })
+    }
+    res.send({ ok: 0 })
+  })
+  /**
    * 以下接口需要登录后才能使用
    */
   .use(require('../middlewares/isMaster')())
