@@ -15,7 +15,16 @@ require('./plugins/db')
 require('./config/init')(app)
 
 // global middlewares
-app.use(require('cors')())
+app.use(
+  require('cors')({
+    credentials: true,
+    origin:
+      process.env.NODE_ENV === 'development'
+        ? `http://localhost:8080`
+        : `${process.env.DOMAIN}`
+  })
+)
+
 app.use(express.json())
 app.use(cookieParser())
 app.use(
