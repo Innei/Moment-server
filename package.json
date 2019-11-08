@@ -1,0 +1,28 @@
+{
+  "name": "moment-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Innei",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^3.0.6",
+    "connect-redis": "^4.0.3",
+    "cookie-parser": "^1.4.4",
+    "cors": "^2.8.5",
+    "cross-env": "^6.0.3",
+    "dotenv": "^8.2.0",
+    "express": "^5.0.0-alpha.7",
+    "express-session": "^1.17.0",
+    "http-assert": "^1.4.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.7.7",
+    "multer": "^1.4.2",
+    "redis": "^2.8.0",
+    "zxcvbn": "^4.4.2"
+  },
+  "scripts": {
+    "start": "cross-env NODE_ENV=development nodemon index.js",
+    "debug": "cross-env NODE_ENV=development nodemon --debug index.js",
+    "prod": "pm2-runtime start ecosystem.config.js --env production"
+  }
+}
