@@ -1,7 +1,7 @@
 @url=http://localhost:3000/api
 
 ### get
-get {{url}}/moments?size=1&page=4
+get {{url}}/moments?size=5&page=1
 
 ### get master
 get {{url}}/master

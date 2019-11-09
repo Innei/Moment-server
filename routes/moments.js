@@ -16,11 +16,13 @@ router
     if (data.length === 0) {
       return res.send({ ok: 0, msg: '没有下页啦!' })
     }
-    const totalPage = Math.ceil((await Moment.countDocuments()) / size)
+    const total = await Moment.countDocuments()
+    const totalPage = Math.ceil(total / size)
     const pageOptions = {
       size: data.length,
       currentPage: Number(page),
       totalPage,
+      total,
       hasNextPage: totalPage > page,
       hasPrevPage: Number(page) !== 1
     }
