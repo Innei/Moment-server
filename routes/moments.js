@@ -13,6 +13,7 @@ router
     const data = await Moment.find({})
       .skip((page - 1) * size)
       .limit(Number(size))
+      .sort({ createdTime: -1 })
     if (data.length === 0) {
       return res.send({ ok: 0, msg: '没有下页啦!' })
     }
@@ -37,7 +38,7 @@ router
   .post('/', async (req, res) => {
     let data
     const { type } = req.body
-    assert(type, 422, '不正确的类型')
+    assert(type, '不正确的类型', 422)
     const {
       title,
       body,
@@ -75,12 +76,12 @@ router
     }
 
     const documents = await Moment.create({ type, content: { ...data } })
-    res.send(documents)
+    res.send({ ok: 1, documents })
   })
 
   .delete('/:id', async (req, res) => {
-    const { id } = req.body
-    assert(id, 422, '标识符为空')
+    const { id } = req.params
+    assert(id, '标识符为空', 422)
     const document = await Moment.deleteOne({ _id: id })
     res.send(document)
   })
