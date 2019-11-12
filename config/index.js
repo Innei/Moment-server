@@ -4,7 +4,7 @@
  * Module dependencies.
  */
 
-const path = require('path')
+// const path = require('path')
 
 const development = require('./env/development')
 const production = require('./env/production')
@@ -14,6 +14,6 @@ const production = require('./env/production')
  */
 
 module.exports = {
-  development: Object.assign({}, development),
-  production: Object.assign({}, production)
+  development: Object.assign({}, process.env, development),
+  production: Object.assign({}, process.env, production)
 }[process.env.NODE_ENV || 'development']

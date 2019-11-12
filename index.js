@@ -9,8 +9,8 @@ const config = require('./config')
 const port = process.env.PORT || 3000
 const app = express()
 const client = redis.createClient()
-
-require('./plugins/db')
+app.set('redis', client)
+require('./plugins/db')(config)
 // init
 require('./config/init')(app)
 
@@ -29,11 +29,19 @@ app.use(express.json())
 app.use(cookieParser())
 app.use(
   session({
-    name: 'moment.sid', // 这里是cookie的name，默认是connect.sid
-    secret: process.env.SECRET || 'tVnVq4zDhDtQPGPrx2qSOSdmuYI24C', // 建议使用 128 个字符的随机字符串
+    name: 'moment.sid',
+    secret:
+      process.env.SECRET ||
+      'gV2PNGn3DtehyY83Dg88136iyd5kHCwvsQo7shTVdrbeyiNurFE7lEgsMBDYCmtLM1QrQzabsdcZvbeLwQkii810w1TJkVwRRIZhYV5zQAlYiIkoXuZp2kJQ22hCSiLk', // 建议使用 128 个字符的随机字符串
     resave: true,
     saveUninitialized: false,
-    cookie: { maxAge: 60 * 1000 * 60, httpOnly: true },
+    cookie: {
+      maxAge: process.env.MAXAGE
+        ? Number(process.env.MAXAGE) * 60 * 1000 * 60 * 24
+        : 60 * 1000 * 60 * 24 * 7,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'development' ? false : true
+    },
     store: new redisStore({ client })
   })
 )

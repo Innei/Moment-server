@@ -91,6 +91,9 @@ router
     assert(verifyUsername, 400, '你不是我的主人')
     const verifyPass = compareSync(password, doc.password)
     assert(verifyPass, 400, '密码不对哦')
+    if (req.session.master === username) {
+      return res.send({ ok: 0, msg: '宁已经登录啦~' })
+    }
     const token = require('jsonwebtoken').sign(
       { _id: doc._id, password: doc.password },
       process.env.SECRET || 'tVnVq4zDhDtQPGPrx2qSOSdmuYI24C'
@@ -132,19 +135,21 @@ router
       return res.status(400).send({ ok: 0, msg: '密码设置过于简单' })
     }
 
-    const master = await Master.findOne()
+    const master = await Master.findOne().select('+password')
     // 验证匹配
     const verifyPass = compareSync(oldPassword, master.password)
-    assert(verifyPass, 400, '密码不对哦')
+    assert(verifyPass, 422, '密码不对哦')
     // 因为只是单用户 (Single Mode)
     const doc = await Master.updateOne({}, { password })
 
-    req.session.destroy(err => {
+    req.session.destroy(async err => {
       if (err) {
         return res.json({ ok: 0, msg: '认证重置失败' })
       }
-      res.clearCookie('master')
-      res.send(doc)
+      delete req.session
+      res.clearCookie('moment.sid', { path: '/' })
+      await req.app.get('redis').flushall()
+      res.send({ ok: 1, msg: '修改成功', ...doc })
     })
   })
 
@@ -152,11 +157,13 @@ router
    * 注销接口
    */
   .get('/sign_out', async (req, res) => {
-    req.session.destroy(err => {
+    req.session.destroy(async err => {
       if (err) {
         return res.json({ ok: 0, msg: '退出登录失败' })
       }
-      res.clearCookie('master')
+      delete req.session
+
+      res.clearCookie('moment.sid', { path: '/' })
       res.send({ ok: 1, msg: 'いってらっしゃい!' })
     })
   })
