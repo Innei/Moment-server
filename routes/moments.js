@@ -1,14 +1,14 @@
 const Moment = require('../models/moment')
 const express = require('express')
-const assert = require('assert')
+const assert = require('http-assert')
 
 const router = express.Router()
 
 router
   .use(require('../middlewares/isInit')())
-  .get('/', async (req, res) => {
+  .get('/', require('../middlewares/recordAccess')(), async (req, res) => {
     const { page = 1, size = 10 } = req.query
-    assert(page > 0, '页数不能小于 0', 422)
+    assert(page > 0, 422, '页数不能小于 0')
 
     const data = await Moment.find({})
       .skip((page - 1) * size)
@@ -34,11 +34,21 @@ router
       data
     })
   })
+
+  .get('/:id', require('../middlewares/recordAccess')(), async (req, res) => {
+    assert(req.params.id, 422, '标识符为空')
+
+    const doc = await Moment.findById(req.params.id)
+
+    doc
+      ? res.send({ ok: 1, ...doc.toObject() })
+      : res.send({ ok: 0, msg: '记录不存在' })
+  })
   .use(require('../middlewares/isMaster')())
   .post('/', async (req, res) => {
     let data
     const { type } = req.body
-    assert(type, '不正确的类型', 422)
+    assert(type, 422, '不正确的类型')
     const {
       title,
       body,
@@ -81,7 +91,7 @@ router
 
   .delete('/:id', async (req, res) => {
     const { id } = req.params
-    assert(id, '标识符为空', 422)
+    assert(id, 422, '标识符为空')
     const document = await Moment.deleteOne({ _id: id })
     res.send(document)
   })

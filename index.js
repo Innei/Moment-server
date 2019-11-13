@@ -66,3 +66,7 @@ app.use(async (err, req, res, next) => {
   }
   next()
 })
+
+app.get('*', require('./middlewares/recordAccess')() ,(req, res) => {
+  res.status(403).send()
+})
