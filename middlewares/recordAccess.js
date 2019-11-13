@@ -2,7 +2,7 @@
 const chalk = require('chalk')
 const moment = require('moment')
 const log = require('../plugins/log')
-const Access = require('../models/Access')
+const Access = require('../models/access')
 module.exports = (options = {}) => {
   return async (req, res, next) => {
     // 时间

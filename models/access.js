@@ -31,5 +31,5 @@ const schema = new mongoose.Schema({
     }
   }
 })
-
+schema.index({ time: -1 })
 module.exports = mongoose.model('Access', schema)

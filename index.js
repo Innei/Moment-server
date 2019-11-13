@@ -50,7 +50,21 @@ app.use(
 require('./routes/index')(app)
 
 app.listen(port)
-console.log('Express app started on port ' + port)
+console.log(`Sever is Starting now...
+ ${require('chalk').red(`
+ 
+  __  __                            _   
+ |  \\/  | ___  _ __ ___   ___ _ __ | |_ 
+ | |\\/| |/ _ \\| '_ \` _ \\ / _ \\ '_ \\| __|
+ | |  | | (_) | | | | | |  __/ | | | |_ 
+ |_|  |_|\\___/|_| |_| |_|\\___|_| |_|\\__|
+                                        
+ `)} 
+
+completed.
+
+server is listening on PORT ${port}.
+`)
 
 app.use(async (err, req, res, next) => {
   if (err) {
@@ -62,11 +76,15 @@ app.use(async (err, req, res, next) => {
     }
     return res
       .status(err.status || err.statusCode || 500)
-      .send({ ok: 0, msg: err.message })
+      .send({
+        ok: 0,
+        msg: process.env.NODE_ENV === 'development' ? err.message : '出错啦'
+      })
   }
+
   next()
 })
 
-app.get('*', require('./middlewares/recordAccess')() ,(req, res) => {
+app.get('*', require('./middlewares/recordAccess')(), (req, res) => {
   res.status(403).send()
 })

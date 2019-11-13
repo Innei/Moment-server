@@ -66,3 +66,9 @@ Content-Type:  application/json
 
 ### check logged
 GET {{url}}/master/check_logged
+
+### 
+GET {{url}}/options/access?to=2019-11-15
+
+### 
+GET {{url}}/options/analytics
