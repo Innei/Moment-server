@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const Access = require('../models/access')
+const Option = require('../models/option')
 
 if (process.env.NODE_ENV !== 'development') {
   router.use(require('../middlewares/recordAccess')())
@@ -39,23 +40,10 @@ router
 
   .get('/analytics', async (req, res) => {
     const today = new Date()
-    // const day = today.getDate()
-    // const month = today.getMonth() + 1
-    // const year = today.getYear() + 1900
-
-    // const num = await Access.countDocuments({
-    //   time: {
-    //     $gt: today.getTime() - 86400000,
-    //     $lte: today.getTime()
-    //   }
-    // })
     const num = await Access.countDocuments({
-      'fullDate.year': today.getYear() + 1900,
+      'fullDate.year': today.getFullYear(),
       'fullDate.month': today.getMonth() + 1,
-      'fullDate.day': {
-        $lte: today.getDate(),
-        $gt: today.getDate() - 7 <= 0 ? 0 : today.getDate() - 7
-      }
+      'fullDate.day': today.getDate()
     }).sort({ time: -1 })
 
     const total = await Access.countDocuments()
@@ -75,25 +63,45 @@ router
     // 分析周数据
     const weekNum = Array(7)
       .fill()
-      .map(u => ({ day: null, PV: 0 }))
+      .map(() => ({ day: null, PV: 0 }))
     // console.log(weekData.shift().time)
     const temp = [...weekData]
 
     for (
-      let time = today.getTime() + 2, i = 6, length = weekData.length;
+      let time =
+          new Date(
+            `${today.getFullYear()}/${today.getMonth() + 1}/${today.getDate() +
+              1}`
+          ).getTime() - 1,
+        i = 6,
+        length = weekData.length;
       time >= today.getTime() - 518400000 && i < length;
       time -= 86400000, i--
     ) {
       let u = temp.shift()
       const day = new Date(time)
       weekNum[i].day = `${day.getMonth() + 1}-${day.getDate()}`
-      while (u && u.time <= time) {
+      while (u && u.time <= time && u.time > time - 86400000) {
         weekNum[i].PV++
         u = temp.shift()
       }
     }
+   
+    const fromInit =
+      Math.floor((today - ((await Option.findOne({ name: 'init_day' }))).value) / 86400000)
+    // const thisYear = fromInit > 365 ? 365 : fromInit
 
-    res.send({ ok: 1, today: num, total, week: weekData.length, year, weekNum })
+    // console.log(thisYear, fromInit)
+
+    res.send({
+      ok: 1,
+      today: num,
+      total,
+      week: weekData.length,
+      year,
+      weekNum,
+      from_create_day: fromInit,
+    })
   })
 
 module.exports = router

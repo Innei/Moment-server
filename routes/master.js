@@ -47,6 +47,10 @@ router
         userIntro
       })
       req.app.set('isInit', true)
+      await require('../models/option').create({
+        name: 'init_day',
+        value: new Date()
+      })
       res.send({ ok: 1, ...doc.toObject() })
     }
   )

@@ -32,4 +32,5 @@ const schema = new mongoose.Schema({
   }
 })
 schema.index({ time: -1 })
+schema.index({ 'fullDate.year': -1 })
 module.exports = mongoose.model('Access', schema)
