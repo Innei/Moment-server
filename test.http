@@ -68,7 +68,7 @@ Content-Type:  application/json
 GET {{url}}/master/check_logged
 
 ### 
-GET {{url}}/options/access?to=2019-11-15
+GET {{url}}/options/access?to=2019/11/15%2019:00
 
 ### 
 GET {{url}}/options/analytics

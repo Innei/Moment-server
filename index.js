@@ -4,6 +4,8 @@ const cookieParser = require('cookie-parser')
 const redis = require('redis')
 const session = require('express-session')
 const redisStore = require('connect-redis')(session)
+const useragent = require('express-useragent')
+
 const config = require('./config')
 
 const port = process.env.PORT || 3000
@@ -15,6 +17,7 @@ require('./plugins/db')(config)
 require('./config/init')(app)
 
 // global middlewares
+app.use(useragent.express())
 app.use(
   require('cors')({
     credentials: true,

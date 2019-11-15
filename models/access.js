@@ -29,7 +29,9 @@ const schema = new mongoose.Schema({
     day: {
       type: Number
     }
-  }
+  },
+  userAgent: {},
+  referer: String
 })
 schema.index({ time: -1 })
 schema.index({ 'fullDate.year': -1 })
