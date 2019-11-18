@@ -171,4 +171,33 @@ router
       res.send({ ok: 1, msg: 'いってらっしゃい!' })
     })
   })
+  /**
+   * 修改资料接口
+   */
+  .put('/introduce', async (req, res) => {
+    const doc = await Master.findOne()
+    const { userIntro } = doc.toObject()
+    const {
+      introduce = userIntro.introduce,
+      skill = userIntro.skill,
+      avatar = doc.avatar,
+      githubUrl = doc.githubUrl,
+      nickname = doc.nickname,
+      username = doc.username
+    } = req.body
+
+    const model = {
+      username,
+      nickname,
+      githubUrl,
+      avatar,
+      userIntro: {
+        skill,
+        introduce
+      }
+    }
+    const r = await doc.updateOne(model)
+    res.send(r)
+  })
+
 module.exports = router
