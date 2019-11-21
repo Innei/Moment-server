@@ -29,7 +29,8 @@ const schema = new mongoose.Schema({
     type: Number,
     default: Date.now()
   },
-  token: String
+  token: String,
+  accessCode: String
 })
 
 function urlParser(val) {

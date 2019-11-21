@@ -44,7 +44,8 @@ router
         avatar,
         nickname,
         githubUrl,
-        userIntro
+        userIntro,
+        accessCode: require('../utils/index').getRandomStr()
       })
       req.app.set('isInit', true)
       await require('../models/option').create({
@@ -96,19 +97,22 @@ router
     const verifyPass = compareSync(password, doc.password)
     assert(verifyPass, 400, '密码不对哦')
     if (req.session.master === username) {
-      return res.send({ ok: 0, msg: '宁已经登录啦~' })
+      return res.send({ ok: 0, msg: '已经登录啦~' })
     }
-    const token = require('jsonwebtoken').sign(
-      { _id: doc._id, password: doc.password },
-      process.env.SECRET || 'tVnVq4zDhDtQPGPrx2qSOSdmuYI24C'
-    )
-    doc.token = token
-    await doc.save()
     // req.session.master = username
-    req.session.regenerate(err => {
+    req.session.regenerate(async err => {
       if (err) {
         return res.status(500).send({ ok: 0, msg: '出错啦' })
       }
+      const token = require('jsonwebtoken').sign(
+        { _id: doc._id, master: username, code: doc.accessCode },
+        process.env.SECRET || 'tVnVq4zDhDtQPGPrx2qSOSdmuYI24C',
+        {
+          expiresIn: '3d'
+        }
+      )
+      doc.token = token
+      await doc.save()
       req.session.master = username
       res.send({ ok: 1, token })
     })
@@ -134,17 +138,21 @@ router
     assert(password, 422, '密码为空')
     assert(oldPassword, 422, '密码为空')
 
-    const zxc = require('zxcvbn')(password)
-    if (zxc.score < 3) {
-      return res.status(400).send({ ok: 0, msg: '密码设置过于简单' })
+    if (process.env.NODE_ENV === 'production') {
+      const zxc = require('zxcvbn')(password)
+      if (zxc.score < 3) {
+        return res.status(400).send({ ok: 0, msg: '密码设置过于简单' })
+      }
     }
-
     const master = await Master.findOne().select('+password')
     // 验证匹配
     const verifyPass = compareSync(oldPassword, master.password)
     assert(verifyPass, 422, '密码不对哦')
     // 因为只是单用户 (Single Mode)
-    const doc = await Master.updateOne({}, { password })
+    const doc = await Master.updateOne(
+      {},
+      { password, accessCode: require('../utils/index').getRandomStr() }
+    )
 
     req.session.destroy(async err => {
       if (err) {

@@ -15,7 +15,7 @@ Content-Type: application/json
 
 {
   "username": "Innei",
-  "password": "yiny2336!!!"
+  "password": "2"
 }
 
 ### sign out
@@ -72,3 +72,16 @@ GET {{url}}/options/access?to=2019/11/15%2019:00
 
 ### 
 GET {{url}}/options/analytics
+
+### upload 
+POST {{url}}/upload
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZGJjZGQ1YThhNGU5YTE2ZWMyNTg5MjkiLCJtYXN0ZXIiOiJJbm5laSIsImNvb2tpZSI6eyJvcmlnaW5hbE1heEFnZSI6NjA0ODAwMDAwLCJleHBpcmVzIjoiMjAxOS0xMS0yOFQwODowNzo1Mi42ODFaIiwic2VjdXJlIjpmYWxzZSwiaHR0cE9ubHkiOnRydWUsInBhdGgiOiIvIn0sImlhdCI6MTU3NDMyMzY3MiwiZXhwIjoxNTc0NTgyODcyfQ.hHgcyju-g6V2Ziad4N3-bWQ7o5omJt-QgdC6AyLUOJs
+
+###
+POST  {{url}}/master/reset_password
+Content-Type: application/json
+
+{
+  "oldPassword": "2",
+  "password": "1"
+}
