@@ -1,4 +1,4 @@
-module.exports = options => {
+module.exports = (options = {}) => {
   return async (req, res, next) => {
     if (req.session.master) {
       return next()
@@ -21,6 +21,6 @@ module.exports = options => {
         console.log(e)
       }
     }
-    return res.status(401).send({ ok: 0, msg: '请先登录' })
+    return res.status(options.status || 401).send({ ok: 0, msg: '请先登录' })
   }
 }

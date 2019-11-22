@@ -114,18 +114,20 @@ router
       doc.token = token
       await doc.save()
       req.session.master = username
+
       res.send({ ok: 1, token })
     })
   })
   /**
    * 判断是否已经登录
    */
-  .get('/check_logged', async (req, res) => {
-    if (req.session.master) {
+  .get(
+    '/check_logged',
+    require('../middlewares/isMaster')({ status: 200 }),
+    async (req, res) => {
       return res.send({ ok: 1 })
     }
-    res.send({ ok: 0 })
-  })
+  )
   /**
    * 判断 token 是否过期
    */
