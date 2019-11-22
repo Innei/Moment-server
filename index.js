@@ -41,7 +41,7 @@ app.use(
     cookie: {
       maxAge: process.env.MAXAGE
         ? Number(process.env.MAXAGE) * 60 * 1000 * 60 * 24
-        : 60 * 1000 * 60 * 24 * 7,
+        : 60 * 1000 * 60 * 24 * 3,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'development' ? false : true
     },
@@ -81,7 +81,7 @@ app.use(async (err, req, res, next) => {
       .status(err.status || err.statusCode || 500)
       .send({
         ok: 0,
-        msg: process.env.NODE_ENV === 'development' ? err.message : '出错啦'
+        msg: err.message
       })
   }
 

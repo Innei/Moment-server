@@ -7,9 +7,9 @@ module.exports = {
       script: 'index.js',
 
       // Options reference: https://pm2.io/doc/en/runtime/reference/ecosystem-file/
-      instances: 2,
+      instances: 1,
       autorestart: true,
-      watch: false,
+      watch: true,
       max_memory_restart: '1G'
     }
   ]

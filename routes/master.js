@@ -108,7 +108,7 @@ router
         { _id: doc._id, master: username, code: doc.accessCode },
         process.env.SECRET || 'tVnVq4zDhDtQPGPrx2qSOSdmuYI24C',
         {
-          expiresIn: '3d'
+          expiresIn: `${process.env.MAXAGE || 3}d`
         }
       )
       doc.token = token
@@ -125,6 +125,33 @@ router
       return res.send({ ok: 1 })
     }
     res.send({ ok: 0 })
+  })
+  /**
+   * 判断 token 是否过期
+   */
+  .post('/check_token', async (req, res) => {
+    const { token } = req.body
+    if (!token) {
+      return res.send({ ok: 0 })
+    }
+    const { accessCode } = await Master.findOne()
+    try {
+      if (
+        accessCode ===
+        require('jsonwebtoken').verify(
+          token,
+          process.env.SECRET || 'tVnVq4zDhDtQPGPrx2qSOSdmuYI24C'
+        ).code
+      ) {
+        return res.send({ ok: 1 })
+      }
+    } catch (e) {
+      console.log(e)
+
+      return res.send({ ok: 0 })
+    }
+
+    return res.send({ ok: 0 })
   })
   /**
    * 以下接口需要登录后才能使用

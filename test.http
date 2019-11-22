@@ -15,11 +15,19 @@ Content-Type: application/json
 
 {
   "username": "Innei",
-  "password": "2"
+  "password": "1"
 }
 
 ### sign out
 get {{url}}/master/sign_out
+
+### check token
+POST  {{url}}/master/check_token
+Content-Type: application/json
+
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZGJjZGQ1YThhNGU5YTE2ZWMyNTg5MjkiLCJtYXN0ZXIiOiJJbm5laSIsImNvZGUiOiIwbjhkZjd1NyIsImlhdCI6MTU3NDQxMTI0OSwiZXhwIjoxNTc0NjcwNDQ5fQ.8pHepOwpgZ2G99fhl_e-xPZggFTPGHYQ_l6s7Uka0i8"
+}
 
 ### post new moment
 post {{url}}/moments
