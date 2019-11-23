@@ -13,19 +13,24 @@ router
     const { to, from, size = 20, page = 1 } = req.query
 
     assert(page > 0, 422, '页数不能小于 0')
-    const toDate = to ? new Date(to) : new Date()
-    const fromDate = from
-      ? new Date(from)
-      : new Date(toDate.getTime() - 518400000)
+    // 7 天访客数据
+    // const toDate = to ? new Date(to) : new Date()
+    // const fromDate = from
+    //   ? new Date(from)
+    //   : new Date(toDate.getTime() - 518400000)
 
-    const data = await Access.find({
-      time: {
-        $gt: fromDate.getTime(),
-        $lte: toDate.getTime()
-      }
-    })
+    const data = await Access.find(
+      to && from
+        ? {
+            time: {
+              $gt: new Date(from).getTime(),
+              $lte: new Date(to).getTime()
+            }
+          }
+        : {}
+    )
       .sort({ time: -1 })
-      .skip((page - 1) * size)
+      .skip((page - 1) * Number(size))
       .limit(Number(size))
 
     const total = await Access.countDocuments()
@@ -47,7 +52,7 @@ router
 
   .get('/analytics', async (req, res) => {
     const today = new Date()
-    const num = await Access.countDocuments({
+    const todayData = await Access.find({
       'fullDate.year': today.getFullYear(),
       'fullDate.month': today.getMonth() + 1,
       'fullDate.day': today.getDate()
@@ -107,17 +112,46 @@ router
     const fromInit = Math.floor(
       (today - (await Option.findOne({ name: 'init_day' })).value) / 86400000
     )
-    // const thisYear = fromInit > 365 ? 365 : fromInit
 
-    // console.log(thisYear, fromInit)
+    // 分析 日 数据
+    const hours = today.getHours()
+    const zero = new Date(
+      `${today.getFullYear()}/${today.getMonth() + 1}/${today.getDate()}`
+    ).getTime()
+    const dayNum = []
 
+    for (
+      let time = zero + 3600000, hour = 0;
+      time <= zero + 86400000;
+      time += 3600000, hour++
+    ) {
+      let PV = 0,
+        IP = 0
+      const ipSet = new Set()
+      for (const i of todayData) {
+        if (i.time < time && i.time >= time - 3600000) {
+          PV++
+          if (!ipSet.has(i.ip)) {
+            IP++
+          }
+          ipSet.add(i.ip)
+          // console.log(ipSet)
+        }
+      }
+      dayNum.push({
+        hour,
+        PV,
+        IP
+      })
+    }
     res.send({
       ok: 1,
-      today: num,
+      today: todayData.length,
       total,
       week: weekData.length,
       year,
       weekNum,
+      dayNum,
       from_create_day: fromInit
     })
   })
