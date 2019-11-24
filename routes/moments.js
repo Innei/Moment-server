@@ -46,47 +46,33 @@ router
   })
   .use(require('../middlewares/isMaster')())
   .post('/', async (req, res) => {
-    let data
-    const { type } = req.body
+    
+    const { type, content } = req.body
     assert(type, 422, '不正确的类型')
-    const {
-      title,
-      body,
-      mood,
-      weather,
-      source,
-      src,
-      comment
-    } = req.body.content
-    switch (type) {
-      case 'moment':
-        data = {
-          title,
-          body,
-          mood,
-          weather
-        }
-        break
-      case 'hitokoto':
-        data = {
-          source,
-          body
-        }
-        break
-      case 'idea':
-        data = {
-          body
-        }
-        break
-      case 'picture':
-        data = { src, comment }
-        break
-      default:
-        break
-    }
-
-    const documents = await Moment.create({ type, content: { ...data } })
+    assert(content, 422, '不正确的内容')
+    
+    const documents = await Moment.create({
+      type,
+      content: { ...pickContent(content, type) }
+    })
     res.send({ ok: 1, documents })
+  })
+
+  .put('/:id', async (req, res) => {
+    const id = req.params.id
+    assert(id, 422, '标识符为空')
+    const { type, content } = req.body
+    assert(type, 422, '不正确的类型')
+    assert(content, 422, '不正确的内容')
+    const query = await Moment.updateOne(
+      { _id: id, type },
+      {
+        content: { ...pickContent(content, type) },
+        modifiedTime: Date.now()
+      }
+    )
+
+    res.send({ ok: 1, query })
   })
 
   .delete('/:id', async (req, res) => {
@@ -95,4 +81,38 @@ router
     const document = await Moment.deleteOne({ _id: id })
     res.send(document)
   })
+
 module.exports = router
+
+function pickContent(content, type) {
+  let data
+  const { title, body, mood, weather, source, src, comment } = content
+  switch (type) {
+    case 'moment':
+      data = {
+        title,
+        body,
+        mood,
+        weather
+      }
+      break
+    case 'hitokoto':
+      data = {
+        source,
+        body
+      }
+      break
+    case 'idea':
+      data = {
+        body
+      }
+      break
+    case 'picture':
+      data = { src, comment }
+      break
+    default:
+      assert(false, 422, '不正确的类型')
+      break
+  }
+  return data
+}

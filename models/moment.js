@@ -2,14 +2,14 @@ const mongoose = require('mongoose')
 
 const schema = new mongoose.Schema({
   createdTime: Number,
-  modifiedTime: Number,
-  type: String,
+  modifiedTime: { type: Number, index: -1 },
+  type: { type: String, index: 1 },
   content: {
     title: { type: String, trim: true },
     body: { type: String, trim: true },
-    src: String,
-    mood: String,
-    weather: String,
+    src: { type: String, trim: true },
+    mood: { type: String, trim: true },
+    weather: { type: String, trim: true },
     source: { type: String, trim: true }
   }
 })

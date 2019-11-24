@@ -31,7 +31,8 @@ const schema = new mongoose.Schema({
     }
   },
   userAgent: {},
-  referer: String
+  referer: String,
+  region: String
 })
 schema.index({ time: -1 })
 schema.index({ 'fullDate.year': -1 })
