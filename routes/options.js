@@ -61,7 +61,7 @@ router
     const total = await Access.countDocuments()
     const weekData = await Access.find({
       time: {
-        $gt: today.getTime() - 518400000,
+        $gte: today.getTime() - 604800000,
         $lte: today.getTime()
       }
     })
@@ -81,13 +81,15 @@ router
 
     for (
       let time =
+          // 这里加了一天 变成了 今天 0 点 --- 明天 0 点的间隔
           new Date(
             `${today.getFullYear()}/${today.getMonth() + 1}/${today.getDate() +
               1}`
-          ).getTime() - 1,
+          ).getTime(),
         i = 6,
         length = weekData.length;
-      time >= today.getTime() - 518400000 && i < length;
+      /** 用6天是 因为前面加了一天 */
+      time >= today.getTime() - 518400000 && i <= length;
       time -= 86400000, i--
     ) {
       let u = temp.shift()
@@ -101,9 +103,12 @@ router
       weekNum[i].IP = ip.length
       // TODO UV
 
-      const day = new Date(time)
+      const day = new Date(time - 86400000)
       weekNum[i].day = `${day.getMonth() + 1}-${day.getDate()}`
-      while (u && u.time <= time && u.time > time - 86400000) {
+      if (i === 1) {
+        console.log(u, weekNum, weekData.slice(-1))
+      }
+      while (u && u.time <= time && u.time >= time - 86400000) {
         weekNum[i].PV++
         u = temp.shift()
       }
@@ -114,7 +119,7 @@ router
     )
 
     // 分析 日 数据
-    const hours = today.getHours()
+    // const hours = today.getHours()
     const zero = new Date(
       `${today.getFullYear()}/${today.getMonth() + 1}/${today.getDate()}`
     ).getTime()
@@ -161,6 +166,6 @@ module.exports = router
 /**
  * 一天 86400000  24 * 60 * 60 * 1000
    三天 259200000
-   七天 518400000
+   七天 604800000
 
  */
