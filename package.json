@@ -12,7 +12,7 @@
     "cors": "^2.8.5",
     "cross-env": "^6.0.3",
     "dotenv": "^8.2.0",
-    "express": "^5.0.0-alpha.7",
+    "express": "^5.0.0-alpha.8",
     "express-session": "^1.17.1",
     "express-useragent": "^1.0.15",
     "http-assert": "^1.4.1",
