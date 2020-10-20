@@ -28,7 +28,7 @@
     "prod": "pm2-runtime start ecosystem.config.js --env production"
   },
   "devDependencies": {
-    "nodemon": "^1.19.4",
+    "nodemon": "^2.0.6",
     "pm2": "^4.1.2"
   }
 }
